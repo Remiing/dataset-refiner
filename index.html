@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>AI Dataset Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header id="header">
+        <div class="logo">Dataset Viewer</div>
+        <div class="controls">
+            <span id="status">학습 데이터 폴더를 선택하세요.</span>
+            <label for="fileInput" class="custom-file-upload">폴더 선택</label>
+            <input type="file" id="fileInput" webkitdirectory directory multiple style="display:none;" />
+            <button id="downloadBtn" onclick="downloadAllTexts()">수정본 다운로드</button>
+        </div>
+    </header>
+    <div id="container">
+        <aside id="sidebar">
+            <div class="add-tag-group">
+                <input type="text" id="newTagInput" placeholder="새 태그 입력...">
+                <button onclick="addNewTag()">추가</button>
+            </div>
+            <h3>Tags (Count)</h3>
+            <div id="tagList"></div>
+        </aside>
+        <main id="content">
+            <div id="images"></div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
