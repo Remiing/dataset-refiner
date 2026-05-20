@@ -161,18 +161,18 @@ body {
 }
 
 .opt-btn.btn-trigger-on {
-    background-color: #be9cff;
+    background-color: #ddddff;
 }
 
-.opt-btn.btn-bulk-add { background-color: #aaffbe; }
-.opt-btn.btn-bulk-del { background-color: #ffa5ae; }
+.opt-btn.btn-bulk-add { background-color: #ddffdd; }
+.opt-btn.btn-bulk-del { background-color: #ffdddd; }
 
 .tag.active .opt-btn {
     border-right-color: #dddddd; 
 }
 
-.opt-btn.btn-add { background-color: #aaffbe; }
-.opt-btn.btn-del { background-color: #ffa5ae; }
+.opt-btn.btn-add { background-color: #ddffdd; }
+.opt-btn.btn-del { background-color: #ffdddd; }
 
 #content {
     flex: 1;
@@ -217,8 +217,8 @@ body {
     width: 30px;
     height: 30px;
     border: none;
-    border-left: 1px solid #eeeeee;
-    border-bottom: 1px solid #eeeeee;
+    /* border-left: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee; */
     background-color: rgba(255, 255, 255, 0.9);
     color: #333;
     font-size: 30px;
@@ -228,5 +228,14 @@ body {
     justify-content: center;
 }
 
-.edit-btn.btn-add { background-color: #aaffbe; }
-.edit-btn.btn-del { background-color: #ffa5ae; }
+.edit-btn.btn-add { background-color: #ddffdd; }
+.edit-btn.btn-del { background-color: #ffdddd; }
+
+#sidebar h3 {
+    font-size: 13px;
+    font-weight: bold;
+    color: #555555;
+    padding: 10px;
+    margin: 0;
+    letter-spacing: -0.2px;
+}

@@ -8,6 +8,27 @@ let tagCount = {};
 let triggerWords = new Set();
 let selectedTag = null;
 let selectedImage = null;
+let tagCategoryMap = {};
+
+
+function buildTagCategoryMap() {
+    function traverse(obj, path = []) {
+        for (const key in obj) {
+            const value = obj[key];
+
+            if (Array.isArray(value)) {
+                tagCategoryMap[key] = [...path];
+            } else if (typeof value === "object" && value !== null) {
+                traverse(value, [...path, key]);
+            }
+        }
+    }
+
+    traverse(TAGS_DATA);
+}
+
+buildTagCategoryMap();
+
 
 // 파일 입력이 변경될 때마다 실행되는 이벤트 리스너
 // 사용자가 파일을 업로드하면 텍스트 파일은 태그 데이터로, 이미지 파일은 URL로 변환하여 imageMap에 정리
@@ -92,18 +113,12 @@ function renderAll() {
 
 function renderTags() {
     tagList.innerHTML = "";
+    const renderedTags = new Set();
 
-    // 태그 정렬 (트리거 단어 > 빈도수 > 알파벳 순)
-    const sortedTags = Object.entries(tagCount).sort((a, b) => {
-        if (triggerWords.has(a[0]) && !triggerWords.has(b[0])) return -1;
-        if (!triggerWords.has(a[0]) && triggerWords.has(b[0])) return 1;
-        return b[1] - a[1] || a[0].localeCompare(b[0]);
-    });
-
-    sortedTags.forEach(([tag, count]) => {
+    function createTagElement(tag, count) {
         const div = document.createElement("div");
         div.className = `tag ${selectedTag === tag ? 'active' : ''}`;
-        
+
         if (selectedImage) {
             const hasTag = imageMap[selectedImage].tags?.includes(tag);
             if (!hasTag) div.classList.add("dimmed");
@@ -120,7 +135,7 @@ function renderTags() {
             const triggerBtn = document.createElement("button");
             const isTrigger = triggerWords.has(tag);
             triggerBtn.textContent = "T";
-            triggerBtn.className = `opt-btn ${isTrigger ? 'btn-trigger-off' : 'btn-trigger-on'}`;
+            triggerBtn.className = "opt-btn btn-trigger-on";
             triggerBtn.onclick = (e) => { e.stopPropagation(); toggleTrigger(tag); };
 
             const allAddBtn = document.createElement("button");
@@ -147,7 +162,7 @@ function renderTags() {
 
         div.appendChild(btnContainer);
 
-        div.onclick = () => { 
+        div.onclick = () => {
             if (selectedImage) {
                 selectedImage = null;
                 selectedTag = tag;
@@ -156,9 +171,66 @@ function renderTags() {
             }
             renderAll();
         };
+
         tagList.appendChild(div);
-    });
+    }
+
+    function hasVisibleTags(categoryObj) {
+        for (const key in categoryObj) {
+            const value = categoryObj[key];
+
+            if (Array.isArray(value) && tagCount.hasOwnProperty(key)) {
+                return true;
+            }
+
+            if (typeof value === "object" && value !== null) {
+                if (hasVisibleTags(value)) return true;
+            }
+        }
+        return false;
+    }
+
+    function renderSubCategories(obj) {
+        for (const mainCategory in obj) {
+            const subObj = obj[mainCategory];
+
+            for (const subCategory in subObj) {
+                const tagObj = subObj[subCategory];
+
+                if (!hasVisibleTags(tagObj)) continue;
+
+                // 소분류만 출력
+                const header = document.createElement("h3");
+                header.textContent = subCategory;
+                tagList.appendChild(header);
+
+                for (const tag in tagObj) {
+                    if (tagCount.hasOwnProperty(tag)) {
+                        createTagElement(tag, tagCount[tag]);
+                        renderedTags.add(tag);
+                    }
+                }
+            }
+        }
+    }
+
+    // 소분류 기준 출력
+    renderSubCategories(TAGS_DATA);
+
+    // 기타 태그
+    const uncategorized = Object.keys(tagCount).filter(tag => !renderedTags.has(tag));
+
+    if (uncategorized.length > 0) {
+        const otherHeader = document.createElement("h3");
+        otherHeader.textContent = "기타";
+        tagList.appendChild(otherHeader);
+
+        uncategorized.sort((a, b) => a.localeCompare(b)).forEach(tag => {
+            createTagElement(tag, tagCount[tag]);
+        });
+    }
 }
+
 
 function renderImages() {
     imagesDiv.innerHTML = "";
